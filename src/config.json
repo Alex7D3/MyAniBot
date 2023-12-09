@@ -1,0 +1,9 @@
+{
+    "api_base_URL": "https://api.myanimelist.net/v2",
+    "mal_URL": "https://myanimelist.net",
+    "anime_URL": "https://myanimelist.net/anime",
+    "manga_URL": "https://myanimelist.net/manga",
+    "base_id_URL": "https://discordapp.com/users",
+    "base_auth_URL ":"https://myanimelist.net/v1/oauth2/authorize",
+    "base_token_URL":"'https://myanimelist.net/v1/oauth2/token",
+    "all_fields": "fields=id,title,main_picture,alternative_titles,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,media_type,status,genres,my_list_status,num_episodes,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,recommendations,studios,statistics,start_season,start_date"}
