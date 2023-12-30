@@ -6,7 +6,7 @@ const REFRESH_EX_SECONDS = 1_814_000;
 
 let client;
 (async () => {
-    if(!db_connection?.length()) return;
+    if(!db_connection.length()) return;
     client = createClient({ url: db_connection })
         .on('connection', () => console.log('Redis Connection Established'))
         .on('error', e => console.error('Redis Client Error: ', e));
