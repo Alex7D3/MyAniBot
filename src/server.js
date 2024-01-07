@@ -7,8 +7,9 @@ const app = express();
 const app_state = new Map();
 //collect access & refresh token
 function startServer() {
-    app.get('/', () => {
+    app.get('/', (req, res) => {
         console.log('uptime get request');
+        res.send('<h1>MyAniBot</h1>');
     });
 
     app.get('/oauth', async ({ query: { code, state } }, response) => {
