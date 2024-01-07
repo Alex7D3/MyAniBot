@@ -7,7 +7,7 @@ const app = express();
 const app_state = new Map();
 //collect access & refresh token
 function startServer() {
-    app.get('/', async ({ query: { code, state } }, response) => {
+    app.get('/oauth', async ({ query: { code, state } }, response) => {
         console.log(`The access code: ${code}`);
 
         const [code_verifier, username, prev_state] = app_state.get(state);
