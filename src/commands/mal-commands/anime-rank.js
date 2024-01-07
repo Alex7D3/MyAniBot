@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { fetchList, appendParams } = require('../../util/mal-fetch');
-const { api_base_URL } = require('../../config.json');
+const { api_base_url } = require('../../config.json');
 const { buildEmbedList } = require('../../util/embed-types');
 const paginate = require('../../util/paging.js');
 const sendDetails = require('../../util/details.js');
@@ -37,7 +37,7 @@ module.exports = {
         const ranking_type = interaction.options.getString('category');
         const num_entries = interaction.options.getInteger('number_of_entries') || REQUEST_PAGE_SIZE;
 
-        const request = new URL(`${api_base_URL}/anime/ranking`);
+        const request = new URL(`${api_base_url}/anime/ranking`);
         const params = new URLSearchParams({
             ranking_type,
             limit: num_entries,

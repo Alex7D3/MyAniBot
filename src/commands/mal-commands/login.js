@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const express = require('express');
+    const express = require('express');
 require('dotenv').config();
-const db = require('../../DBConfig');
-const { base_auth_URL, base_token_URL, redirect_uri } = require('../../config.json');
-const FIVE_MINUTES = 300000;
+const { app_state } = require('../../server.js');
+const { base_auth_url } = require('../../config.json');
+const FIVE_MINUTES = 300_000;
 
 const base64URLEncode = (buffer) =>
     buffer.toString('base64')
@@ -25,58 +25,39 @@ module.exports = {
         .setDescription('login to MyAnimeList.net to access personal list information'),
 
     async execute(interaction) {
-        //128 char * 3/4 byte/char = 96 bytes (recommended size)
+        if(!process.env.db_connection)
+            return interaction.reply({
+                content: 'User authentication has not been set up.',
+                ephemeral: true
+            });
+
+        //128 char * 3/4 byte/char = 96 bytes
         const code_verifier = base64URLEncode(crypto.randomBytes(96));
 
         // const code_challenge = base64URLEncode(sha256(code_verifier));
         // current API only supports simple method
         const code_challenge = code_verifier;
 
+        let state;
+        do state = base64URLEncode(crypto.randomBytes(8));
+        while(app_state.has(state));
+
+        app_state.set(state, [code_verifier, interaction.user.username, state]);
+
+        const { client_id } = process.env;
         const auth_params = new URLSearchParams ({
             response_type: 'code',
-            client_id: process.env.mal_id,
-            state: process.env.oauth_state,
-            redirect_uri,
+            client_id,
+            state,
             code_challenge
         });
 
-        const auth_request = `${new URL(base_auth_URL)}?${auth_params}`;
-        const server = startRedirectServer(interaction.user.username, code_verifier);
+        const auth_request = `${new URL(base_auth_url)}?${auth_params}`;
+
         await interaction.reply({
-            content: `Click [here](${auth_request}) to sign into myanimelist.net. This will expire after`,
+            content: `Click [here](${auth_request}) to sign in to myanimelist.net. This will expire after 5 minutes.`,
             ephemeral: true
         });
-        setTimeout(server.close, FIVE_MINUTES);
+        setTimeout(() => app_state.delete(state), FIVE_MINUTES);
     }
 };
-
-function startRedirectServer(username, code_verifier) {
-    const app = express();
-
-    //collect access & refresh token
-    app.get('/', async ({ query: { code } }, response) => {
-        console.log(`The access code: ${code}`);
-        console.log('verifier', code_verifier);
-        const token_response = await fetch(base_token_URL, {
-            method: 'POST',
-            body: new URLSearchParams({
-                client_id: process.env.mal_id,
-                client_secret: process.env.mal_secret,
-                code,
-                code_verifier,
-                grant_type: 'authorization_code',
-                redirect_uri
-            })
-        });
-
-        if(!token_response.ok) {
-            console.log(token_response.url);
-            throw new Error(`failed to get access token: ${token_response.status}`);
-        }
-
-        response.sendFile('index.html', { root: '.' });
-        const token_json = await token_response.json();
-        db.set_user_token(username, token_json);
-    });
-    return app.listen(process.env.PORT || 3001, () => console.log('listening at redirect'));
-}

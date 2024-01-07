@@ -1,15 +1,15 @@
-const { all_fields, api_base_URL } = require('../config.json');
+const { all_fields, api_base_url } = require('../config.json');
 require('dotenv').config();
 
 const get_settings = {
     method: 'GET',
-    headers: { 'X-MAL-CLIENT-ID': process.env.mal_id },
+    headers: { 'X-MAL-CLIENT-ID': process.env.client_id },
     redirect: 'follow'
 };
 
 const put_settings = {
     method: 'PUT',
-    headers: { 'X-MAL-CLIENT-ID': process.env.mal_id },
+    headers: { 'X-MAL-CLIENT-ID': process.env.client_id },
     redirect: 'follow'
 };
 
@@ -25,7 +25,7 @@ module.exports = {
      * @return {string}
      */
     async fetchAnimeDetails(id) {
-        return fetch(`${api_base_URL}/anime/${id}?${all_fields}`, get_settings)
+        return fetch(`${api_base_url}/anime/${id}?${all_fields}`, get_settings)
             .then(response => {
                 if(!response.ok)
                     throw new Error(`HTTP error: ${response.status}`);

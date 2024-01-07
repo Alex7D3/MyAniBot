@@ -1,10 +1,18 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { startServer } = require('./server.js');
+const { startDB } = require('./DBConfig.js');
 require('dotenv').config();
 //const avatar_path = path.join(__dirname, 'images', 'avatars');
 
 //const avatars = fs.readdirSync(avatar_path).map(img => path.join(avatar_path, img));
+
+startServer();
+if(process.env.db_connection)
+    (async () => {
+        await startDB();
+    })();
 
 const client = new Client({
     intents: [

@@ -1,11 +1,11 @@
 const { EmbedBuilder } = require('discord.js');
-const { anime_URL, mal_URL, base_id_URL } = require('../config.json');
+const { anime_url, mal_url, base_discord_id_url } = require('../config.json');
 
 const getAuthorSettings = (author) => {
     const { displayName, id } = author;
     return {
         name: displayName,
-        url: `${base_id_URL}/${id}`,
+        url: `${base_discord_id_url}/${id}`,
         iconURL: author.displayAvatarURL({ dynamic: true })
     };
 };
@@ -13,7 +13,7 @@ const getAuthorSettings = (author) => {
 module.exports = {
     buildMosaicEmbed(title, author, data_list) {
         const embeds = data_list.map(({ node }) => new EmbedBuilder()
-            .setURL(mal_URL).setImage(node.main_picture.large));
+            .setURL(mal_url).setImage(node.main_picture.large));
         embeds[0].setTitle(title).setColor(0x2E51A2)
             .setAuthor(getAuthorSettings(author));
         return embeds;
@@ -25,10 +25,10 @@ module.exports = {
         for(let offset = 0; offset < data_list.length; offset += page_len) {
             embed_list.push(new EmbedBuilder()
                 .setTitle(title).setColor(0x2E51A2)
-                .setURL(mal_URL).setAuthor(getAuthorSettings(author))
+                .setURL(mal_url).setAuthor(getAuthorSettings(author))
                 .setDescription(data_list.slice(offset, offset + page_len)
                 .map(({ node }, i) =>
-                    `**${i + offset + 1}.** [${node.title}](${anime_URL}/${node.id}) \`${node[metric] ?? 'N/A'}\``
+                    `**${i + offset + 1}.** [${node.title}](${anime_url}/${node.id}) \`${node[metric] ?? 'N/A'}\``
                     .padEnd(40)
                     ).join('\n')
                 )
@@ -44,7 +44,7 @@ module.exports = {
         const common_fields = {
             title: node.title,
             color: 0x2E51A2,
-            url: `${anime_URL}/${node.id}`,
+            url: `${anime_url}/${node.id}`,
             author: getAuthorSettings(author),
             timestamp: new Date().toISOString()
         };
@@ -102,12 +102,12 @@ module.exports = {
                     {
                         name: 'Related:',
                         value: related_anime.length ? related_anime.slice(0, Math.min(3, related_anime.length)).map(({ node: r }) =>
-                            `> - [${r.title}](${anime_URL}/${r.id})`).join('\n') : '*nothing yet*'
+                            `> - [${r.title}](${anime_url}/${r.id})`).join('\n') : '*nothing yet*'
                     },
                     {
                         name: 'Recommendations:',
                         value: recommendations.length ? recommendations.slice(0, Math.min(3, recommendations.length)).map(({ node: r }) =>
-                            `> - [${r.title}](${anime_URL}/${r.id})`).join('\n') : '*nothing yet*'
+                            `> - [${r.title}](${anime_url}/${r.id})`).join('\n') : '*nothing yet*'
                     }
                 ],
                 footer: { text: '⬅main page | statistics➡' }

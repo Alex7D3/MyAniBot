@@ -3,7 +3,7 @@ const { fetchList, appendParams } = require('../../util/mal-fetch');
 const { buildEmbedList, buildMosaicEmbed } = require('../../util/embed-types');
 const paginate = require('../../util/paging.js');
 const sendDetails = require('../../util/details.js');
-const { api_base_URL } = require('../../config.json');
+const { api_base_url } = require('../../config.json');
 const LIST_PAGE_SIZE = 100, MOSAIC_PAGE_SIZE = 4;
 const seasons = ['winter', 'spring', 'summer', 'fall'];
 const seasonOf = (date) => seasons[Math.floor((date.getMonth() + 1) / 3) % 4];
@@ -40,7 +40,7 @@ module.exports = {
         const season = options.getString('season') || seasonOf(now);
         const sort = options.getString('sort') || 'anime_num_list_users';
         const type = options.getString('display_type');
-        const request = new URL(`${api_base_URL}/anime/season/${year}/${season}`);
+        const request = new URL(`${api_base_url}/anime/season/${year}/${season}`);
         const params = new URLSearchParams({
             limit: LIST_PAGE_SIZE,
             sort,

@@ -5,20 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="3;url=http://myanimelist.net/" />
     <title>Conditions Accepted</title>
-     <!--remove?-->
-    <script>
-        const { ouath_state } = require("./config.json");
-        window.onload = () => {
-		    
-        };
-
-        if (ouath_state !== atob(decodeURIComponent(state))) {
-	        return console.log("invalid state!");
-        }
-
-    </script>
 </head>
 <body>
-    <h1 style="display:block; align-content: center;">Thank you. Redirecting to MAL in 3 seconds.</h1>
+    <main>
+        <h1 style="display: block; align-content: center;">
+            Thank you. Redirecting to MAL in 3 seconds.
+        </h1>
+    </main>
 </body>
 </html>
