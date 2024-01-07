@@ -1,10 +1,13 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { startServer } = require('./server.js');
 require('dotenv').config();
 //const avatar_path = path.join(__dirname, 'images', 'avatars');
 
 //const avatars = fs.readdirSync(avatar_path).map(img => path.join(avatar_path, img));
+
+startServer();
 
 const client = new Client({
     intents: [

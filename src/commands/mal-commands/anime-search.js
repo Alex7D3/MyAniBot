@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { fetchList, fetchAnimeDetails, sleep, appendParams } = require('../../util/mal-fetch.js');
 const { buildEmbedList, buildDetailEmbeds } = require('../../util/embed-types');
-const { api_base_URL } = require('../../config.json');
+const { api_base_url } = require('../../config.json');
 const paginate = require('../../util/paging.js');
 const sendDetails = require('../../util/details.js');
 const fuzzySearch = require('../../util/fuzzy-match.js');
@@ -23,7 +23,7 @@ module.exports = {
 	async execute(interaction) {
         const { options } = interaction;
         const q = options.getString('title');
-        const request = new URL(`${api_base_URL}/anime`);
+        const request = new URL(`${api_base_url}/anime`);
         const params = new URLSearchParams({
             q,
             limit: LIST_PAGE_SIZE,
