@@ -9,7 +9,11 @@ require('dotenv').config();
 //const avatars = fs.readdirSync(avatar_path).map(img => path.join(avatar_path, img));
 
 startServer();
-if(process.env.db_connection) Promise.resolve(startDB());
+if(process.env.db_connection)
+    (async () => {
+        await startDB();
+    })();
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,

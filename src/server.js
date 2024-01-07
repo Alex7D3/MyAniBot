@@ -7,17 +7,21 @@ const app = express();
 const app_state = new Map();
 //collect access & refresh token
 function startServer() {
+    app.get('/', () => {
+        console.log('uptime get request');
+    });
+
     app.get('/oauth', async ({ query: { code, state } }, response) => {
         console.log(`The access code: ${code}`);
 
+        if(!state) {
+            console.log('link timeout');
+            return;
+        }
         const [code_verifier, username, prev_state] = app_state.get(state);
 
         if(prev_state && prev_state !== state)
             throw new Error('CSRF attack');
-        else if(!prev_state) {
-            console.log('uptime or link timeout');
-            return;
-        }
 
         const token_response = await fetch(base_token_url, {
             method: 'POST',
