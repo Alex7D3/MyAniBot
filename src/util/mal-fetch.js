@@ -3,13 +3,13 @@ require('dotenv').config();
 
 const get_settings = {
     method: 'GET',
-    headers: { 'X-MAL-CLIENT-ID': process.env.mal_id },
+    headers: { 'X-MAL-CLIENT-ID': process.env.client_id },
     redirect: 'follow'
 };
 
 const put_settings = {
     method: 'PUT',
-    headers: { 'X-MAL-CLIENT-ID': process.env.mal_id },
+    headers: { 'X-MAL-CLIENT-ID': process.env.client_id },
     redirect: 'follow'
 };
 

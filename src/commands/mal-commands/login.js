@@ -3,9 +3,8 @@ const path = require('node:path');
 const crypto = require('node:crypto');
     const express = require('express');
 require('dotenv').config();
-const db = require('../../DBConfig.js');
 const { app_state } = require('../../server.js');
-const { base_auth_url, redirect_uri } = require('../../config.json');
+const { base_auth_url } = require('../../config.json');
 const FIVE_MINUTES = 300_000;
 
 const base64URLEncode = (buffer) =>
@@ -26,6 +25,12 @@ module.exports = {
         .setDescription('login to MyAnimeList.net to access personal list information'),
 
     async execute(interaction) {
+        if(!process.env.db_connection)
+            return interaction.reply({
+                content: 'User authentication has not been set up.',
+                ephemeral: true
+            });
+
         //128 char * 3/4 byte/char = 96 bytes
         const code_verifier = base64URLEncode(crypto.randomBytes(96));
 
@@ -34,16 +39,16 @@ module.exports = {
         const code_challenge = code_verifier;
 
         let state;
-        do state = base64URLEncode(crypto.randomBytes(16));
+        do state = base64URLEncode(crypto.randomBytes(8));
         while(app_state.has(state));
 
-        app_state.set(state, [code_verifier, interaction.user, state]);
+        app_state.set(state, [code_verifier, interaction.user.username, state]);
 
+        const { client_id } = process.env;
         const auth_params = new URLSearchParams ({
             response_type: 'code',
-            client_id: process.env.mal_id,
-            state: process.env.oauth_state,
-            redirect_uri,
+            client_id,
+            state,
             code_challenge
         });
 

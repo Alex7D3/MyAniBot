@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
-const db = require('../../DBConfig');
-const { base_token_url, redirect_uri } = require('../../config.json');
+const db = require('./DBConfig.js');
+const { base_token_url } = require('./config.json');
 
 const app = express();
 const app_state = new Map();
@@ -11,6 +11,7 @@ function startServer() {
         console.log(`The access code: ${code}`);
 
         const [code_verifier, username, prev_state] = app_state.get(state);
+
         if(prev_state && prev_state !== state)
             throw new Error('CSRF attack');
         else if(!prev_state) {
@@ -21,12 +22,11 @@ function startServer() {
         const token_response = await fetch(base_token_url, {
             method: 'POST',
             body: new URLSearchParams({
-                client_id: process.env.mal_id,
+                client_id: process.env.client_id,
                 client_secret: process.env.mal_secret,
                 code,
                 code_verifier,
                 grant_type: 'authorization_code',
-                redirect_uri
             })
         });
 
@@ -35,9 +35,9 @@ function startServer() {
             throw new Error(`failed to get access token: ${token_response.status}`);
         }
 
-        response.sendFile('index.html', { root: '.' });
+        response.sendFile('./index.html', { root: 'src' });
         const token_json = await token_response.json();
-        db.setUserToken(username, token_json);
+        if(db) db.setUserToken(username, token_json);
     });
 
     app.listen(process.env.PORT || 3001, () => console.log('listening at redirect'));
