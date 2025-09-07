@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  redis:
+    image: 'redislabs/redismod'
+    ports:
+      - '6379:6379'
+  bot:
+    image: node
+    restart: on-failure
+    build: ./bot
+    depends_on:
+      - redis
+  web1:
+    image: node
+    restart: on-failure
+    build: ./web-server
+    hostname: myanibot.auth1
+    ports:
+      - '3001:3000'
+    env_file:
+      - ./web-server/.env
+  web2:
+    image: node
+    restart: on-failure
+    build: ./web-server
+    hostname: myanibot.auth2
+    ports:
+      - '3002:3000'
+    env_file:
+      - ./web-server/.env
+  nginx:
+    image: nginx
+    restart: always
+    build: ./nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /etc/:/etc/
+    depends_on:
+      - web1
+      - web2
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}

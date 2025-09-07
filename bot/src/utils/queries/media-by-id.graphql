@@ -1,0 +1,11 @@
+query ($id: Int) {
+	Media (id: $id) {
+		id
+        malID
+		title {
+			romaji
+			english
+			native
+		}
+	}
+}
