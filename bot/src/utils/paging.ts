@@ -66,8 +66,8 @@ export default async function(interaction: CommandInteraction, embedList: APIEmb
 
     first.setDisabled(page == 0);
     prev.setDisabled(page == 0);
-    next.setDisabled(page == length - 1);
-    last.setDisabled(page == length - 1);
+    next.setDisabled(page == embedList.length - 1);
+    last.setDisabled(page == embedList.length - 1);
 
     await btnInteraction.update({
       embeds: [embedList[page]],
