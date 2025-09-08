@@ -2,8 +2,8 @@ import { createClient } from 'redis';
 import process from 'process';
 
 const redis = createClient({
-    url: process.env.REDIS_HOST,
-    password: process.env.REDIS_PASSWORD
+    url: process.env.redis_host,
+    password: process.env.redis_password
 });
 
 redis.on('connection', () => console.log('Redis Connection Established'));
