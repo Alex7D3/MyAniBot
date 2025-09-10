@@ -1,26 +1,43 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { BotCommand } from '@anibot-types/anibot-command';
+import { REST, Routes } from 'discord.js'
+import type { AniBotCommand } from '../types/anibot-command.js';
 
-function getCommands(commandsPath: string) {
-    const output = [];
+const { discord_token, discord_client_id, guild_id } = process.env;
 
-    function findCommands(curPath: string) {
+export async function getCommands(commandsPath: string) {
+    const output: AniBotCommand[]  = [];
+    const children = fs.readdirSync(commandsPath, { withFileTypes: true });
+
+    async function findCommands(curPath: string): Promise<void> {
         if (fs.statSync(curPath).isDirectory()) {
-            const children = fs.readdirSync(curPath, { withFileTypes: true });
             for (const childPath of children) {
-                const fullPath = path.join(curPath, childPath);
-                findCommands(fullPath, output);
+                const fullPath = path.join(curPath, childPath.name);
+                findCommands(fullPath);
             }
-        } else if (curPath.endsWith('.js') || curPath.endsWith('.ts')) {
-            const command = require(curPath);
-            output.push(command as BotCommand);
+        } else if (curPath.endsWith('.ts') || curPath.endsWith('.js')) {
+            const command = await import(curPath);
+            output.push(command as AniBotCommand);
         }
     }
 
-    findCommands(commandsPath);
+    await findCommands(commandsPath);
     return output;
 }
 
-var x = getCommands('/home/alex_/dev/MyAniBot/src/commands');
-console.log(x);
+export async function registerCommands(commandList: AniBotCommand[]) { 
+  const rest = new REST({ version: '10' }).setToken(discord_token);
+  try {
+    console.log(`Refreshing ${commandList.length} application commands`);
+
+    const data = await rest.put(
+      Routes.applicationGuildCommands(discord_client_id, guild_id),
+      { body: commandList }
+    ) as AniBotCommand[];
+    
+    console.log(`Successfully registerd ${data.length} application commands`);
+  } catch(error) {
+    console.error(error);
+  }
+}
+
