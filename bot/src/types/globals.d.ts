@@ -1,15 +1,20 @@
-declare namespace NodeJS {
-    export interface ProcessEnv {
-        DISCORD_TOKEN: string;
-        DISCORD_GUILD_ID: string;
-        DISCORD_CLIENT_ID: string;
-        MAL_CLIENT_ID: string;
-        MAL_CLIENT_SECRET: string
-        ANILIST_CLIENT_SECRET: string;
-        ANILIST_CLIENT_ID: string;
-        ANILIST_API_URL: string;
-        REDIS_HOST: string;
-        REDIS_PORT: string;
-        REDIS_PASSWORD: string;
+export {};
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      discord_token: string;
+      discord_client_id: string;
+      guild_id: string;
+      client_id: string;
+      client_secret_mal: string;
+      client_secret: string;
+      anilist_client_id: string;
+      port: string;
+      redis_host: string;
+      redis_port: string;
+      redis_password: string;
+      redirect_uri: string;
     }
+  }
 }
