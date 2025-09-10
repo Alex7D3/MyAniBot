@@ -11,19 +11,18 @@ import { handleAutocomplete } from './utils/autocomplete-handler.js';
 import AnibotClient from './anibot-client.js';
 
 const client = new AnibotClient({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
 });
 
 client.once(Events.ClientReady, async readyClient => {
-    const hour = new Date().getHours();
-    console.log(`Good ${
-        (hour >= 18) ? 'evening' :
-        (hour >= 12) ? 'afternoon' : 'morning'
+  const hour = new Date().getHours();
+  console.log(`Good ${(hour >= 18) ? 'evening' :
+      (hour >= 12) ? 'afternoon' : 'morning'
     }. Logged in as ${readyClient.user.tag}`);
 });
 
@@ -40,11 +39,7 @@ client.login(process.env.discord_token);
 redis.connect();
 
 client.on(Events.InteractionCreate, async (interaction: BaseInteraction) => {
-    if(interaction.isCommand()) {
-        handleCommand(interaction);
-    } else if (interaction.isAutocomplete()) {
-        handleAutocomplete(interaction);
-    } else {
-        console.error("Unknown interaction...");
-    }
+  if (interaction.isCommand()) handleCommand(interaction);
+  else if (interaction.isAutocomplete()) handleAutocomplete(interaction);
+  else console.error("Unknown interaction...");
 });
