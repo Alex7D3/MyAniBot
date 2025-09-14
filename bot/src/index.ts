@@ -1,14 +1,12 @@
 import path from 'node:path';
 import url from 'node:url';
-import { getCommands, registerCommands } from './utils/get-commands.js';
+import { getModules, registerCommands } from './utils/get-commands.js';
+import type { AniBotCommand, AniBotEvent } from './types/anibot-module';
 import redis from './utils/redis-config.js';
-import { BaseInteraction, GatewayIntentBits, Events } from 'discord.js';
+import { GatewayIntentBits } from 'discord.js';
+import AnibotClient from './anibot-client.js';
 import dotenv from 'dotenv';
 dotenv.config();
-
-import { handleCommand } from './utils/command-handler.js';
-import { handleAutocomplete } from './utils/autocomplete-handler.js';
-import AnibotClient from './anibot-client.js';
 
 const client = new AnibotClient({
   intents: [
@@ -19,27 +17,24 @@ const client = new AnibotClient({
   ]
 });
 
-client.once(Events.ClientReady, async readyClient => {
-  const hour = new Date().getHours();
-  console.log(`Good ${(hour >= 18) ? 'evening' :
-      (hour >= 12) ? 'afternoon' : 'morning'
-    }. Logged in as ${readyClient.user.tag}`);
-});
-
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const commandsPath = path.join(__dirname, 'commands');
+const eventsPath = path.join(__dirname, 'events');
 
 (async () => {
-  const commandList = await getCommands(commandsPath);
+  const commandList: AniBotCommand[] = await getModules<AniBotCommand>(commandsPath);
   await registerCommands(commandList);
   commandList.forEach(command => client.commands.set(command.data.name, command));
-});
+
+  const events: AniBotEvent[] = await getModules<AniBotEvent>(eventsPath);
+  events.forEach(event => {
+    if (event.once) {
+      client.once(event.name, (...args) => event.execute(...args));
+    } else {
+      client.on(event.name, (...args) => event.execute(...args));
+    }
+  });
+})();
 
 client.login(process.env.discord_token);
 redis.connect();
-
-client.on(Events.InteractionCreate, async (interaction: BaseInteraction) => {
-  if (interaction.isCommand()) handleCommand(interaction);
-  else if (interaction.isAutocomplete()) handleAutocomplete(interaction);
-  else console.error("Unknown interaction...");
-});
