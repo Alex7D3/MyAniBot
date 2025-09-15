@@ -23,6 +23,16 @@ export interface Picture { large: string; medium: null | string; };
 
 type RelationType = 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story' ;
 
+export interface MiniDocument {
+  [key: string]: any;
+  media: 'anime' | 'manga';
+  id: number;
+  title: number;
+  mean: number;
+  rank: number;
+  popularity: number;
+};
+
 export interface MediaDocument {
   [key: string]: any;
   id: number;

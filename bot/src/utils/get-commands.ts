@@ -1,43 +1,35 @@
 import fs from 'node:fs';
+import type { PathLike } from 'node:fs';
 import path from 'node:path';
-import { REST, Routes } from 'discord.js'
-import type { AniBotCommand } from '../types/anibot-command.js';
+import type { AniBotCommand, AniBotEvent } from '../types/anibot-module.js';
 
-const { discord_token, discord_client_id, guild_id } = process.env;
+export async function getModules<ModuleType>(rootPath: PathLike) {
+  const output: ModuleType[] = [];
 
-export async function getCommands(commandsPath: string) {
-    const output: AniBotCommand[]  = [];
-    const children = fs.readdirSync(commandsPath, { withFileTypes: true });
+  const entries = await fs.promises.readdir(rootPath, { withFileTypes: true });
 
-    async function findCommands(curPath: string): Promise<void> {
-        if (fs.statSync(curPath).isDirectory()) {
-            for (const childPath of children) {
-                const fullPath = path.join(curPath, childPath.name);
-                findCommands(fullPath);
-            }
-        } else if (curPath.endsWith('.ts') || curPath.endsWith('.js')) {
-            const command = await import(curPath);
-            output.push(command as AniBotCommand);
-        }
+  for (const entry of entries) {
+    const subPath = path.join(String(rootPath), entry.name);
+
+    if (entry.isDirectory()) {
+      const subDirFiles = await getModules<ModuleType>(subPath);
+      output.push(...subDirFiles);
+    } else if (subPath.endsWith('.ts')) {
+      // TODO: Implement type checking with library, cast is unsafe
+      const module: ModuleType = await import(subPath);
+      output.push(module);
     }
+  }
 
-    await findCommands(commandsPath);
-    return output;
+  return output;
 }
 
-export async function registerCommands(commandList: AniBotCommand[]) { 
-  const rest = new REST({ version: '10' }).setToken(discord_token);
-  try {
-    console.log(`Refreshing ${commandList.length} application commands`);
+export async function loadCommands(rootPath: PathLike): Promise<Map<string, AniBotCommand>> {
+  const commandList = await getModules<AniBotCommand>(rootPath);
+  return commandList.reduce((acc, cur) => acc.set(cur.data.name, cur), new Map<string, AniBotCommand>);
+}
 
-    const data = await rest.put(
-      Routes.applicationGuildCommands(discord_client_id, guild_id),
-      { body: commandList }
-    ) as AniBotCommand[];
-    
-    console.log(`Successfully registerd ${data.length} application commands`);
-  } catch(error) {
-    console.error(error);
-  }
+export async function loadEvents(rootPath: PathLike): Promise<AniBotEvent[]> {
+  return await getModules<AniBotEvent>(rootPath);
 }
 
