@@ -1,39 +1,23 @@
 {
-    "dependencies": {
-        "discord.js": "^14.12.1",
-        "dotenv": "^16.3.1",
-        "node": "^21.2.0",
-        "redis": "^4.7.0",
-        "request": "^2.88.2",
-        "request-promise": "^0.0.1"
-    },
-    "name": "index",
-    "version": "1.0.0",
-    "main": "./dist/src/index.js",
-    "type": "module",
-    "devDependencies": {
-        "@eslint/js": "^9.13.0",
-        "@types/node": "^22.8.6",
-        "eslint": "^8.57.1",
-        "globals": "^15.11.0",
-        "tsc": "^2.0.4",
-        "tsx": "^4.19.2"
-    },
-    "imports": {
-        "#utils/*.js": "./src/utils/*.js",
-        "#commands/**/.js": "./src/commands/**/.ts"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "lint": "eslint .  -c .js",
-        "lint-fix": "eslint --fix .  -c .js",
-        "start": "node ./dist/src/index.js",
-        "load-commands": "node ./dist/deploy-commands.js",
-        "dev": "tsx watch src/index.ts",
-        "build": "tsc src"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "description": ""
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "MyAniBot",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --loader ts-node/esm src/index.ts"
+  },
+  "author": "Alex7D3",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.22.1",
+    "dotenv": "^17.2.2",
+    "redis": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
 }
