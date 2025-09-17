@@ -1,6 +1,8 @@
 import redis from './redis-config';
 import type { MediaDocument } from '../types/media-document';
 import { isAnime } from '../types/media-document';
+import { base_token_url } from '../malAPI.json';
+const { client_id, client_secret } = process.env;
 
 const ONE_DAY = 24 * 60 * 60;
 const THIRTY_DAYS = 30 * 24 * 60 * 60;
@@ -22,7 +24,7 @@ export async function getDocument(media: 'anime' | 'manga', id: number): Promise
 type TokenData = {
   access_token: string;
   refresh_token: string;
-  expires_in: string;
+  expires_in: number;
 };
 
 export async function getUser(discordId: string): Promise<TokenData & { timestamp: number }> {
@@ -31,6 +33,34 @@ export async function getUser(discordId: string): Promise<TokenData & { timestam
 
 export async function removeUser(discordId: string): Promise<void> {
   await redis.del(`user:${discordId}`);
+}
+
+export async function getUserToken(discordId: string): Promise<string> {
+  const user =  await getUser(discordId);
+
+  if (!user.access_token)
+    throw new Error('User is not logged in');
+  else if (user.expires_in < new Date().getSeconds() - user.timestamp) {
+    const { refresh_token } = user;
+    const res = await fetch(base_token_url, {
+      method: 'POST',
+      body: JSON.stringify({
+        client_id,
+        client_secret,
+        grant_type: 'refresh_token',
+        refresh_token
+      })
+    });
+
+    if (!res.ok)
+      throw new Error(`HTTP error refreshing token: ${res.status}.`);
+
+    const data = await res.json() as TokenData;
+    await storeUser(data, discordId);
+    return data.access_token;
+  }
+
+  return user.access_token;
 }
 
 export async function storeUser(token: TokenData, discordId: string, expiry = THIRTY_DAYS): Promise<void> {
