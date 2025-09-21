@@ -1,15 +1,16 @@
 # build stage
-FROM node:16-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /usr/src/app
 COPY package*.json .
-RUN npm i --only=development
-COPY . .
+RUN npm install
+COPY tsconfig.json .
+COPY src ./src
 RUN npm run build
 
 # deploy stage
-FROM node:16-alpine AS deploy
+FROM node:20-alpine AS deploy
 WORKDIR /usr/src/app
 COPY package*.json .
-RUN npm i --production
+RUN npm install --production
 COPY --from=build /usr/app/src/dist ./dist
-CMD ["npm", "start"]
+CMD ["node", "start"]
