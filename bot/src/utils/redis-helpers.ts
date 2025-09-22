@@ -1,7 +1,8 @@
 import redis from './redis-config';
 import type { MediaDocument } from '../types/media-document';
 import { isAnime } from '../types/media-document';
-import { base_token_url } from '../malAPI.json';
+import api from './malAPI';
+
 const { client_id, client_secret } = process.env;
 
 const ONE_DAY = 24 * 60 * 60;
@@ -42,7 +43,7 @@ export async function getUserToken(discordId: string): Promise<string> {
     throw new Error('User is not logged in');
   else if (user.expires_in < new Date().getSeconds() - user.timestamp) {
     const { refresh_token } = user;
-    const res = await fetch(base_token_url, {
+    const res = await fetch(api.base_token_url, {
       method: 'POST',
       body: JSON.stringify({
         client_id,

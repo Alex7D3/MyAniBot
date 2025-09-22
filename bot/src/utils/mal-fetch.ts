@@ -1,12 +1,10 @@
-import api from '../malAPI.json'
 import { storeDocument, getDocument } from './redis-helpers';
-import type { MediaDocument, MiniDocument } from '../types/media-document';
-import dotenv from 'dotenv';
-dotenv.config();
+import type { MediaDocument, MiniDocument, SearchType } from '../types/media-document';
+import api from './malAPI';
 
 const headers = { 'X-MAL-CLIENT-ID': process.env.client_id };
 
-export async function fetchDetails(media: 'anime' | 'manga', id: number): Promise<MediaDocument> {
+export async function fetchDetails(media: SearchType, id: number): Promise<MediaDocument> {
   const document: MediaDocument | null = await getDocument(media, id);  
   if (document) return document;
 
@@ -22,7 +20,7 @@ export async function fetchDetails(media: 'anime' | 'manga', id: number): Promis
 }
 
 type SearchData = { data: [{ node: MiniDocument }], paging: { next: string }};
-export async function search(media: 'anime' | 'manga', query: string, limit = 100, offset = 10): Promise<MiniDocument[]> {
+export async function search(media: SearchType, query: string, limit = 100, offset = 10): Promise<MiniDocument[]> {
   const documents: MiniDocument[] = [];
   const params = new URLSearchParams({
     q: query,
