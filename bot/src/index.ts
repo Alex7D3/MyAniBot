@@ -4,8 +4,6 @@ import { loadEvents } from './utils/get-commands.js';
 import type { AniBotEvent } from './types/anibot-module';
 import redis from './utils/redis-config.js';
 import { GatewayIntentBits, Client } from 'discord.js';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const client = new Client({
   intents: [
