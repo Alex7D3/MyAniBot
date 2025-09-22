@@ -4,11 +4,14 @@
   "description": "MyAniBot",
   "main": "index.ts",
   "type": "module",
+  "rootDir": "./src",
+  "outDir": "./dist",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+	"register": "node --loader ts-node/esm src/utils/register-commands.ts",
     "dev": "node --loader ts-node/esm src/index.ts",
 	"build": "tsc",
-	"start": "node dist/index.js"
+	"start": "node ./dist/index.js"
   },
   "author": "Alex7D3",
   "license": "ISC",

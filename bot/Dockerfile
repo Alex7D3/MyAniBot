@@ -12,5 +12,7 @@ FROM node:20-alpine AS deploy
 WORKDIR /usr/src/app
 COPY package*.json .
 RUN npm install --production
-COPY --from=build /usr/app/src/dist ./dist
-CMD ["node", "start"]
+COPY --from=build /usr/src/app/dist ./dist
+COPY start.sh /usr/src/app/start.sh
+    2
+CMD ["/usr/src/app/start.sh"]
