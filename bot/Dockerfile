@@ -14,5 +14,4 @@ COPY package*.json .
 RUN npm install --production
 COPY --from=build /usr/src/app/dist ./dist
 COPY start.sh /usr/src/app/start.sh
-    2
 CMD ["/usr/src/app/start.sh"]
