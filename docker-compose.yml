@@ -1,14 +1,17 @@
-version: '3.9'
 networks:
   default:
     name: myanibot 
-
+volumes:
+  redis_data:
 services:
   redis:
-    image: 'redislabs/redismod'
-    ports:
-      - '6379:6379'
+    image: 'redis:latest'
     restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD}
 
   bot:
     build: ./bot
