@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } from 'discord.js';
 import type { CommandInteraction, ButtonInteraction, APIEmbed } from 'discord.js';
 
 export default async function(interaction: CommandInteraction, embedList: APIEmbed[],
@@ -29,7 +29,7 @@ export default async function(interaction: CommandInteraction, embedList: APIEmb
   const row = new ActionRowBuilder<ButtonBuilder>()
     .addComponents([first, prev, pageCount, next, last]);
 
-  const message = await interaction.reply({
+  const message = await interaction.editReply({
     content,
     embeds: [embedList[page]],
     components: [row.toJSON()]
@@ -42,7 +42,8 @@ export default async function(interaction: CommandInteraction, embedList: APIEmb
   collector.on('collect', async (btnInteraction: ButtonInteraction) => {
     if (interaction.user.id !== btnInteraction.user.id)
       return await btnInteraction.reply({
-        content: `Only <@${interaction.user.id}> can navigate this message.`, ephemeral: true
+        content: `Only <@${interaction.user.id}> can navigate this message.`,
+        flags: MessageFlags.Ephemeral
       });
 
     await btnInteraction.deferUpdate();
@@ -69,7 +70,7 @@ export default async function(interaction: CommandInteraction, embedList: APIEmb
     next.setDisabled(page == embedList.length - 1);
     last.setDisabled(page == embedList.length - 1);
 
-    await btnInteraction.update({
+    await btnInteraction.editReply({
       embeds: [embedList[page]],
       components: [row]
     });
