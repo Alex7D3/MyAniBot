@@ -1,8 +1,8 @@
 import { createClient } from 'redis';
 
-const { redis_host: host, redis_password: password, redis_port } = process.env;
+const { redis_host, redis_password: password, redis_port, NODE_ENV } = process.env;
 const port = Number(redis_port);
-console.log(host);
+const host = NODE_ENV === 'dev' ? 'localhost' : redis_host;
 const redis = createClient({
   socket: { host, port },
   password 

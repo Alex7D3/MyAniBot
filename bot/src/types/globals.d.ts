@@ -15,6 +15,7 @@ declare global {
       redis_port: string;
       redis_password: string;
       redirect_uri: string;
+      NODE_ENV: string;
     }
   }
 }
