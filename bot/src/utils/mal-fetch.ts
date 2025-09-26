@@ -20,15 +20,17 @@ export async function fetchDetails(media: SearchType, id: number): Promise<Media
 }
 
 type SearchData = { data: [{ node: MiniDocument }], paging: { next: string }};
-export async function search(media: SearchType, query: string, limit = 100, offset = 10): Promise<MiniDocument[]> {
+export async function search(media: SearchType, query: string, limit = 100, offset = 0, nsfw = true): Promise<MiniDocument[]> {
   const documents: MiniDocument[] = [];
   const params = new URLSearchParams({
     q: query,
-    fields: api.mini_fields,
     limit: String(limit),
-    offset: String(offset)
+    offset: String(offset),
+    nsfw: String(nsfw),
+    fields: api.mini_fields,
   });
   let req = `${api.base_api_url}/${media}?${params}`;
+  console.log(req);
   while (req) {
     const res = await fetch(req, { method: 'GET', headers }); 
     if (!res.ok) throw new Error(`HTTP error fetching search results: ${res.status}`);
